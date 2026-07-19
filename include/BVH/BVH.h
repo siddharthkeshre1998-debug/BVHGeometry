@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "Algorithms/RayTriangle.h"
+#include "Algorithms/RayTriangle.h" 
 #include "BVH/BVHNode.h"
 #include "Geometry/Triangle.h"
 #include "Math/Ray.h"
