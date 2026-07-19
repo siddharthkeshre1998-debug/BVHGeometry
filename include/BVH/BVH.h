@@ -1,8 +1,8 @@
 #pragma once
 
+#include <limits>
 #include <memory>
 #include <vector>
-#include <limits>
 
 #include "Algorithms/RayTriangle.h"
 #include "BVH/BVHNode.h"
@@ -14,9 +14,6 @@
 namespace bvh
 {
 
-/**
- * @brief Result returned by the nearest triangle query.
- */
 struct ClosestTriangleResult
 {
     const Triangle* triangle = nullptr;
@@ -28,7 +25,6 @@ struct ClosestTriangleResult
     double distanceSquared =
         std::numeric_limits<double>::max();
 
-    // Barycentric coordinates
     double u = 0.0;
     double v = 0.0;
     double w = 0.0;
@@ -56,19 +52,10 @@ public:
     // Queries
     //----------------------------------------------------------------------
 
-    /**
-     * Returns true if the ray intersects the mesh.
-     * The closest hit is returned in 'hit'.
-     */
     bool Intersect(
         const Ray& ray,
         RayHit& hit) const;
 
-    /**
-     * Finds the closest triangle to a point.
-     *
-     * Returns false if the mesh is empty.
-     */
     bool FindClosestTriangle(
         const Vec3& point,
         ClosestTriangleResult& result) const;
@@ -94,10 +81,6 @@ private:
     int LongestAxis(
         const AABB& bounds) const;
 
-    /**
-     * Uses std::nth_element to partition the range.
-     * Returns the median index.
-     */
     int MedianSplit(
         int start,
         int end,
@@ -107,11 +90,21 @@ private:
     // Traversal
     //----------------------------------------------------------------------
 
-    bool IntersectRecursive(
+    /**
+     * Traverses the BVH and updates the closest hit.
+     *
+     * tMax always stores the closest hit distance found so far.
+     * Nodes farther than tMax are skipped.
+     */
+    void IntersectRecursive(
         const BVHNode* node,
         const Ray& ray,
+        double& tMax,
         RayHit& closestHit) const;
 
+    /**
+     * Traverses the BVH looking for the nearest triangle.
+     */
     void FindClosestRecursive(
         const BVHNode* node,
         const Vec3& point,
@@ -128,8 +121,8 @@ private:
     std::unique_ptr<BVHNode> m_root;
 
     /**
-     * Triangle permutation used during BVH construction.
-     * Triangles in Mesh are never reordered.
+     * Permutation array used during BVH construction.
+     * The mesh itself is never reordered.
      */
     std::vector<int> m_triangleIndices;
 };
