@@ -8,19 +8,48 @@
 namespace bvh
 {
 
+/**
+ * @brief Result of a ray-triangle intersection.
+ */
 struct RayHit
 {
+    /**
+     * Was there an intersection?
+     */
     bool hit = false;
 
+    /**
+     * Distance along the ray.
+     */
     double t = 0.0;
 
+    /**
+     * Barycentric coordinates.
+     *
+     * w = 1 - u - v
+     */
     double u = 0.0;
     double v = 0.0;
 
+    /**
+     * World-space hit position.
+     */
     Vec3 position;
+
+    /**
+     * Triangle normal.
+     */
     Vec3 normal;
 
+    /**
+     * Triangle that was hit.
+     */
     const Triangle* triangle = nullptr;
+
+    /**
+     * Index of the triangle in Mesh.
+     */
+    int triangleIndex = -1;
 };
 
 class RayTriangle
@@ -82,6 +111,7 @@ public:
 
         hit.hit = true;
         hit.t = t;
+
         hit.u = u;
         hit.v = v;
 
@@ -91,6 +121,11 @@ public:
             Vec3::Cross(edge1, edge2).Normalized();
 
         hit.triangle = &triangle;
+
+        // triangleIndex is intentionally NOT assigned here.
+        // RayTriangle knows only about a Triangle object.
+        // The BVH traversal owns the triangle index and will
+        // populate hit.triangleIndex after a successful hit.
 
         return true;
     }
