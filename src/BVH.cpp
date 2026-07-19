@@ -111,4 +111,130 @@ std::unique_ptr<BVHNode> BVH::BuildRecursive(int start, int end)
     return node;
 }
 
+bool BVH::Intersect(const Ray& ray, RayHit& hit) const
+{
+    hit.Reset();
+
+    if (!m_root)
+        return false;
+
+    double tMax = std::numeric_limits<double>::max();
+    IntersectRecursive(m_root.get(), ray, tMax, hit);
+
+    return hit.hit;
+}
+
+void BVH::IntersectRecursive(
+    const BVHNode* node,
+    const Ray& ray,
+    double& tMax,
+    RayHit& closestHit) const
+{
+    if (!node)
+        return;
+
+    double tNear, tFar;
+    if (!node->bounds.Intersect(ray, tNear, tFar, 0.0, tMax))
+        return;
+
+    if (node->IsLeaf())
+    {
+        for (int i = 0; i < node->triangleCount; ++i)
+        {
+            int triIndex = m_triangleIndices[node->firstTriangle + i];
+            const Triangle& tri = m_mesh[triIndex];
+
+            RayHit localHit;
+            if (RayTriangle::Intersect(ray, tri, localHit) && localHit.t < tMax)
+            {
+                tMax = localHit.t;
+                localHit.triangleIndex = triIndex;
+                closestHit = localHit;
+            }
+        }
+        return;
+    }
+
+    double lNear=0,lFar=0,rNear=0,rFar=0;
+    bool hitLeft=node->left && node->left->bounds.Intersect(ray,lNear,lFar,0.0,tMax);
+    bool hitRight=node->right && node->right->bounds.Intersect(ray,rNear,rFar,0.0,tMax);
+
+    if(hitLeft && hitRight)
+    {
+        if(lNear < rNear)
+        {
+            IntersectRecursive(node->left.get(),ray,tMax,closestHit);
+            IntersectRecursive(node->right.get(),ray,tMax,closestHit);
+        }
+        else
+        {
+            IntersectRecursive(node->right.get(),ray,tMax,closestHit);
+            IntersectRecursive(node->left.get(),ray,tMax,closestHit);
+        }
+    }
+    else if(hitLeft)
+        IntersectRecursive(node->left.get(),ray,tMax,closestHit);
+    else if(hitRight)
+        IntersectRecursive(node->right.get(),ray,tMax,closestHit);
+}
+
+bool BVH::FindClosestTriangle(const Vec3& point,
+                              ClosestTriangleResult& result) const
+{
+    result = ClosestTriangleResult{};
+    if(!m_root) return false;
+    FindClosestRecursive(m_root.get(), point, result);
+    return result.triangle != nullptr;
+}
+
+void BVH::FindClosestRecursive(
+    const BVHNode* node,
+    const Vec3& point,
+    ClosestTriangleResult& result) const
+{
+    if(!node) return;
+
+    if(node->bounds.DistanceSquared(point) > result.distanceSquared)
+        return;
+
+    if(node->IsLeaf())
+    {
+        for(int i=0;i<node->triangleCount;++i)
+        {
+            int triIndex=m_triangleIndices[node->firstTriangle+i];
+            const Triangle& tri=m_mesh[triIndex];
+
+            auto cp=ClosestPointTriangle::Compute(point,tri);
+
+            if(cp.distanceSquared < result.distanceSquared)
+            {
+                result.triangle=&tri;
+                result.triangleIndex=triIndex;
+                result.closestPoint=cp.point;
+                result.distanceSquared=cp.distanceSquared;
+                result.u=cp.u;
+                result.v=cp.v;
+                result.w=cp.w;
+            }
+        }
+        return;
+    }
+
+    double leftDist = node->left ? node->left->bounds.DistanceSquared(point)
+                                 : std::numeric_limits<double>::max();
+    double rightDist = node->right ? node->right->bounds.DistanceSquared(point)
+                                   : std::numeric_limits<double>::max();
+
+    if(leftDist < rightDist)
+    {
+        FindClosestRecursive(node->left.get(),point,result);
+        FindClosestRecursive(node->right.get(),point,result);
+    }
+    else
+    {
+        FindClosestRecursive(node->right.get(),point,result);
+        FindClosestRecursive(node->left.get(),point,result);
+    }
+}
+
 } // namespace bvh
