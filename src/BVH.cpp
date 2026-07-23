@@ -1,5 +1,5 @@
 #include "BVH/BVH.h"
-
+#include "ClosestPointTriangle.h"
 #include <algorithm>
 #include <numeric>
 
