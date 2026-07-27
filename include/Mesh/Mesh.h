@@ -24,6 +24,7 @@ public:
     //----------------------------------------------------------------------
 
     std::vector<Triangle> triangles;
+    AABB bounds;
 
     //----------------------------------------------------------------------
     // Modifiers
@@ -32,6 +33,9 @@ public:
     inline void AddTriangle(const Triangle& triangle)
     {
         triangles.push_back(triangle);
+        bounds.Expand(triangle.v0);
+        bounds.Expand(triangle.v1);
+        bounds.Expand(triangle.v2);
     }
 
     inline void AddTriangle(
@@ -44,6 +48,9 @@ public:
             v1,
             v2,
             static_cast<int>(triangles.size()));
+        bounds.Expand(triangle.v0);
+        bounds.Expand(triangle.v1);
+        bounds.Expand(triangle.v2);
     }
 
     inline void Clear()
@@ -88,7 +95,12 @@ public:
         {
             bounds.Expand(tri.bounds);
         }
+        this->bounds = bounds;
+        return bounds;
+    }
 
+    const AABB Mesh::GetBounds() const
+    {
         return bounds;
     }
 };
