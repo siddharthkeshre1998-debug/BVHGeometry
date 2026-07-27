@@ -48,9 +48,9 @@ public:
             v1,
             v2,
             static_cast<int>(triangles.size()));
-        bounds.Expand(triangle.v0);
-        bounds.Expand(triangle.v1);
-        bounds.Expand(triangle.v2);
+        bounds.Expand(v0);
+        bounds.Expand(v1);
+        bounds.Expand(v2);
     }
 
     inline void Clear()
@@ -99,7 +99,7 @@ public:
         return bounds;
     }
 
-    AABB Mesh::GetBounds() const
+    AABB GetBounds() const
     {
         return bounds;
     }
