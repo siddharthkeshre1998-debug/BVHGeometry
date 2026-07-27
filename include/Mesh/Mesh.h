@@ -87,16 +87,13 @@ public:
     // Mesh Bounds
     //----------------------------------------------------------------------
 
-    AABB ComputeBounds() const
+    AABB ComputeBounds()
     {
-        AABB bounds;
-
         for (const auto& tri : triangles)
         {
-            bounds.Expand(tri.bounds);
+            this->bounds.Expand(tri.bounds);
         }
-        this->bounds = bounds;
-        return bounds;
+        return this->bounds;
     }
 
     AABB GetBounds() const
