@@ -99,7 +99,7 @@ public:
         return bounds;
     }
 
-    const AABB Mesh::GetBounds() const
+    AABB Mesh::GetBounds() const
     {
         return bounds;
     }
