@@ -100,6 +100,26 @@ public:
             m_origin.y + (j + 0.5) * m_voxelSize,
             m_origin.z + (k + 0.5) * m_voxelSize);
     }
+    
+    Vec3 WorldToGrid(
+        const Vec3& point) const
+    {
+        return Vec3(
+            (point.x - m_origin.x) / m_voxelSize,
+            (point.y - m_origin.y) / m_voxelSize,
+            (point.z - m_origin.z) / m_voxelSize);
+    }
+
+    bool IsValidIndex(
+        int i,
+        int j,
+        int k) const
+    {
+        return
+            i >= 0 && i < m_nx &&
+            j >= 0 && j < m_ny &&
+            k >= 0 && k < m_nz;
+    }
 
     //---------------------------------------------------------------------
     // Raw Storage
