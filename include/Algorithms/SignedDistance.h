@@ -12,7 +12,8 @@ bool IsInside(const Vec3& point,
               const BVH& bvh)
 {
   //Random direction for now
-  Vec3 direction(1.0, 0.3723, 0.6180).Normalized();
+  Vec3 direction(1.0, 0.3723, 0.6180);
+  direction.Normalized();
   Ray ray(point, direction);
 
   return (bvh.CountRayIntersections(ray) % 2) == 1;
