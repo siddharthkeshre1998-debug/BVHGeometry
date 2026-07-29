@@ -188,7 +188,7 @@ int BVH::CountRayIntersections(
     if (!m_root)
         return 0;
 
-    return CountRayIntersections(m_root, ray);
+    return CountRayIntersections(m_root.get(), ray);
 }
 
 //---------------------------------------------------------------------
@@ -216,12 +216,12 @@ int BVH::CountRayIntersections(
         {
             int triangleIndex =
                 m_triangleIndices[node->firstTriangle + i];
-
+            const Triangle& tri = m_mesh[triIndex];
             hit.Reset();
 
             if (RayTriangle::Intersect(
                     ray,
-                    m_mesh->GetTriangles()[triangleIndex],
+                    tri,
                     hit))
             {
                 ++count;
@@ -235,8 +235,8 @@ int BVH::CountRayIntersections(
     // Internal node
     //-----------------------------------------------------------------
 
-    return CountRayIntersections(node->left, ray) +
-           CountRayIntersections(node->right, ray);
+    return CountRayIntersections(node->left.get(), ray) +
+           CountRayIntersections(node->right.get(), ray);
 }
 
 bool BVH::FindClosestTriangle(const Vec3& point,
