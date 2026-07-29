@@ -199,14 +199,14 @@ int BVH::CountRayIntersections(
     const BVHNode* node,
     const Ray& ray) const
 {
-    if (!node.bounds.Intersect(ray))
+    if (!node->bounds.Intersect(ray))
         return 0;
 
     //-----------------------------------------------------------------
     // Leaf node
     //-----------------------------------------------------------------
 
-    if (node.IsLeaf())
+    if (node->IsLeaf())
     {
         int count = 0;
 
