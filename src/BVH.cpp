@@ -216,7 +216,7 @@ int BVH::CountRayIntersections(
         {
             int triangleIndex =
                 m_triangleIndices[node->firstTriangle + i];
-            const Triangle& tri = m_mesh[triIndex];
+            const Triangle& tri = m_mesh[triangleIndex];
             hit.Reset();
 
             if (RayTriangle::Intersect(
