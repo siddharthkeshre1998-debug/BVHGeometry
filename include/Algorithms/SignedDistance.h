@@ -8,13 +8,13 @@
 
 namespace bvh
 {
-bool SignedDistance::IsInside(const Vec3& point,
-                              const BVH& bvh)
+bool IsInside(const Vec3& point,
+              const BVH& bvh)
 {
   //Random direction for now
-  Vec direction(1.0, 0.3723, 0.6180).normalized();
+  Vec3 direction(1.0, 0.3723, 0.6180).Normalized();
   Ray ray(point, direction);
 
-  return bvh.CountRayIntersections(ray) % 2);
+  return (bvh.CountRayIntersections(ray) % 2) == 1;
 }
 } //namespace bvh
