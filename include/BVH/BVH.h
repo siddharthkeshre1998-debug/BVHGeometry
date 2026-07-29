@@ -56,6 +56,8 @@ public:
         const Ray& ray,
         RayHit& hit) const;
 
+    int CountRayIntersections(const Ray& ray) const;
+
     bool FindClosestTriangle(
         const Vec3& point,
         ClosestTriangleResult& result) const;
@@ -101,6 +103,8 @@ private:
         const Ray& ray,
         double& tMax,
         RayHit& closestHit) const;
+
+    int CountRayIntersections(int nodeIndex, const Ray& ray) const;
 
     /**
      * Traverses the BVH looking for the nearest triangle.
