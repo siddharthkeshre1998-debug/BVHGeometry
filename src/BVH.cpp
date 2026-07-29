@@ -178,6 +178,69 @@ void BVH::IntersectRecursive(
         IntersectRecursive(node->right.get(),ray,tMax,closestHit);
 }
 
+//---------------------------------------------------------------------
+// Count all ray intersections
+//---------------------------------------------------------------------
+
+int BVH::CountRayIntersections(
+    const Ray& ray) const
+{
+    if (m_nodes.empty())
+        return 0;
+
+    return CountRayIntersections(0, ray);
+}
+
+//---------------------------------------------------------------------
+// Recursive ray traversal
+//---------------------------------------------------------------------
+
+int BVH::CountRayIntersections(
+    int nodeIndex,
+    const Ray& ray) const
+{
+    const BVHNode& node = m_nodes[nodeIndex];
+
+    if (!node.bounds.Intersect(ray))
+        return 0;
+
+    //-----------------------------------------------------------------
+    // Leaf node
+    //-----------------------------------------------------------------
+
+    if (node.IsLeaf())
+    {
+        int count = 0;
+
+        RayHit hit;
+
+        for (int i = 0; i < node.triangleCount; ++i)
+        {
+            int triangleIndex =
+                m_triangleIndices[node.firstTriangle + i];
+
+            hit.Reset();
+
+            if (RayTriangle::Intersect(
+                    ray,
+                    m_mesh->GetTriangles()[triangleIndex],
+                    hit))
+            {
+                ++count;
+            }
+        }
+
+        return count;
+    }
+
+    //-----------------------------------------------------------------
+    // Internal node
+    //-----------------------------------------------------------------
+
+    return CountRayIntersections(node.left, ray) +
+           CountRayIntersections(node.right, ray);
+}
+
 bool BVH::FindClosestTriangle(const Vec3& point,
                               ClosestTriangleResult& result) const
 {
