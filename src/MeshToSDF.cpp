@@ -1,4 +1,5 @@
 #include "SDF/MeshToSDF.h"
+#include "Algorithms/SignedDistance.h"
 
 #include <algorithm>
 #include <cmath>
@@ -102,10 +103,10 @@ SDFGrid MeshToSDF::Generate(
                         point,
                         result))
                 {
+                    float distance = std::sqrt(result.distanceSquared);
+                    bool inside = SignedDistance::IsInside(point, bvh);
                     grid.At(i, j, k) =
-                        static_cast<float>(
-                            std::sqrt(
-                                result.distanceSquared));
+                        inside ? -distance: distance;
                 }
             }
         }
