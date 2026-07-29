@@ -185,10 +185,10 @@ void BVH::IntersectRecursive(
 int BVH::CountRayIntersections(
     const Ray& ray) const
 {
-    if (m_nodes.empty())
+    if (!m_root)
         return 0;
 
-    return CountRayIntersections(0, ray);
+    return CountRayIntersections(m_root, ray);
 }
 
 //---------------------------------------------------------------------
@@ -196,11 +196,9 @@ int BVH::CountRayIntersections(
 //---------------------------------------------------------------------
 
 int BVH::CountRayIntersections(
-    int nodeIndex,
+    BVHNode* node,
     const Ray& ray) const
 {
-    const BVHNode& node = m_nodes[nodeIndex];
-
     if (!node.bounds.Intersect(ray))
         return 0;
 
