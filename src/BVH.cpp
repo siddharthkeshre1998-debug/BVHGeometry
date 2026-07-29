@@ -196,7 +196,7 @@ int BVH::CountRayIntersections(
 //---------------------------------------------------------------------
 
 int BVH::CountRayIntersections(
-    BVHNode* node,
+    const BVHNode* node,
     const Ray& ray) const
 {
     if (!node.bounds.Intersect(ray))
