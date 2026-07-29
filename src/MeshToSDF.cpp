@@ -104,7 +104,7 @@ SDFGrid MeshToSDF::Generate(
                         result))
                 {
                     float distance = std::sqrt(result.distanceSquared);
-                    bool inside = SignedDistance::IsInside(point, bvh);
+                    bool inside = IsInside(point, bvh);
                     grid.At(i, j, k) =
                         inside ? -distance: distance;
                 }
