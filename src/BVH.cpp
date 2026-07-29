@@ -212,10 +212,10 @@ int BVH::CountRayIntersections(
 
         RayHit hit;
 
-        for (int i = 0; i < node.triangleCount; ++i)
+        for (int i = 0; i < node->triangleCount; ++i)
         {
             int triangleIndex =
-                m_triangleIndices[node.firstTriangle + i];
+                m_triangleIndices[node->firstTriangle + i];
 
             hit.Reset();
 
@@ -235,8 +235,8 @@ int BVH::CountRayIntersections(
     // Internal node
     //-----------------------------------------------------------------
 
-    return CountRayIntersections(node.left, ray) +
-           CountRayIntersections(node.right, ray);
+    return CountRayIntersections(node->left, ray) +
+           CountRayIntersections(node->right, ray);
 }
 
 bool BVH::FindClosestTriangle(const Vec3& point,
