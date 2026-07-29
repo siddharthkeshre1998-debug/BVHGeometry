@@ -104,7 +104,7 @@ private:
         double& tMax,
         RayHit& closestHit) const;
 
-    int CountRayIntersections(int nodeIndex, const Ray& ray) const;
+    int CountRayIntersections(const BVhNode* node, const Ray& ray) const;
 
     /**
      * Traverses the BVH looking for the nearest triangle.
